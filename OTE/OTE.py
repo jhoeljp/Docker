@@ -27,7 +27,8 @@ class OTE_Data:
             return None
 
         # Load the data into a pandas DataFrame
-        data = pd.read_excel(BytesIO(response.content), header=4, usecols="A:F", nrows=27)
+        # data = pd.read_excel(BytesIO(response.content), header=4, usecols="A:F", nrows=27)
+        data = pd.read_excel(BytesIO(response.content), header=4, nrows=27)
         data['Date'] = date
 
         return data
@@ -42,30 +43,47 @@ class OTE_Data:
 
         # Get data for each date in the range
         for date in dates:
+        
             data = self.get_data(date)
             if data is not None:
                 all_data = pd.concat([all_data, data])
 
-        #Rename columns from czech to english 
-        all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = True)
+        #re-arrange columns for dataframe until date 08.06.2022 to most updated column format 
+        if date <= datetime(2022, 6, 8):
+
+            df = df[['Hodina', 'Cena (EUR/MWh)', 'Množství\n(MWh)','Saldo DT\n(MWh)','Export\n(MWh)','Import\n(MWh)']]
+
+            #rename column to up to date convention 
+            all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo DT\n(MWh)':'Balance','Export\n(MWh)':'Export','Import\n(MWh)':'Import'}, inplace = True)
+
+        #from 09.06.2023 ignore 
+        else:
+            
+            #Rename columns from czech to english
+            all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = True)
+        
         all_data = all_data.dropna()
+
         return all_data
 
     #Function to download date from starting date to todays date
     def get_historical_data(self):
         # Define the start and end dates
-        start_date = datetime(2023, 1, 1)
+        start_date = datetime(2019, 1, 1)
+        
 
         date_obj = datetime.now()
         end_year, end_day, end_month = date_obj.year , date_obj.day, date_obj.month
         end_date = datetime(end_year, end_month, end_day)  # for example, June 5, 2023
 
+        #delete this 
+        end_date = datetime(2019, 6, 1)
+        
         return self.download_data(start_date,end_date)
 
     #Function to download todays date #after 3 pm czech time 
     def get_tomorrow_data(self):
         # Define the start and end dates
-        #end_date == start_date
 
         date_obj = datetime.now()
         end_year, end_day, end_month = date_obj.year , date_obj.day, date_obj.month
