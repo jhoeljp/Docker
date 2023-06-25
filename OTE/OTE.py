@@ -1,38 +1,43 @@
 import pandas as pd
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 
 '''
 1. Download historical data for the month
 2. Download todays day 
 '''
-URL = "https://www.ote-cr.cz/pubweb/attachments"
 
 class OTE_Data:
 
     def __init__(self) -> None:
-        self.base_url = URL
+        self.base_url = "https://www.ote-cr.cz/pubweb/attachments"
+
+        #first date known for dateset
+        self.OTE_UPDATE_TIME_CET = 15
 
         #first date known for dateset 
-        start_date = datetime(2022, 6, 8)
+        self.start_date = datetime(2022,6,8)
 
-        #historical date range is default
-        self.get_date(start_date.day, start_date.month, start_date.year)
+        self.set_default_end_date()
+
+        print(f"start date: {self.start_date}")
+        print(f"end date: {self.end_date}")
         
-    def __init__(self, day: int, month: int, year: int):
-        self.base_url = URL
-        self.get_date(day,month,year)
+    def set_start_date(self, day: int, month: int, year: int) -> None:
+        self.start_date = datetime(year,month,day)
+
+    def set_end_date(self, day: int, month: int, year: int) -> None:
+        self.start_date = datetime(year,month,day)
     
-    def get_date(self,day: int, month: int, year: int) -> None:
+    def set_default_end_date(self) -> None:
         #OTE document get updated everyday 15:00 Central European Time
         date_today = datetime.now()
 
-        if date_today.hour < 15:
+        if date_today.hour < self.OTE_UPDATE_TIME_CET:
             date_today.day -= 1
 
         self.end_date = datetime(date_today.year,date_today.month,date_today.day)
-        self.start_date = datetime(year,month,day)
 
     # Function to download and process the xls file
     def get_data(self, date: datetime) -> pd.DataFrame:
@@ -51,7 +56,9 @@ class OTE_Data:
         # Load the data into a pandas DataFrame
         data = pd.read_excel(BytesIO(response.content), header=4, usecols="A:F", nrows=27)
         # data = pd.read_excel(BytesIO(response.content), header=4, nrows=27)
-        data['Date'] = date
+
+        #convert date type from typestamp 
+        data['Date'] = date.isoformat()
 
         return data
 
@@ -69,6 +76,18 @@ class OTE_Data:
             data = self.get_data(date)
             if data is not None:
                 all_data = pd.concat([all_data, data])
+
+        #re-arrange columns for dataframe until date 08.06.2022 to most updated column format 
+        #dataset specific date
+        if date <= datetime(2022, 6, 8):
+
+            df = df[['Hodina', 'Cena (EUR/MWh)', 'Množství\n(MWh)','Saldo DT\n(MWh)','Export\n(MWh)','Import\n(MWh)']]
+
+            #rename column to up to date convention 
+            all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo DT\n(MWh)':'Balance','Export\n(MWh)':'Export','Import\n(MWh)':'Import'}, inplace = True)
+
+        #from 09.06.2023 no switch of columns from database schema  
+        else:
             
             #Rename columns from czech to english
             all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = True)
@@ -84,11 +103,9 @@ class OTE_Data:
     
     #Download data from yesterday
     def get_yesterdays_data(self) -> pd.DataFrame:
-
-        start_date = self.end_date
-        start_date = start_date.day -1 
-
-        return self.download_data(start_date,self.end_date)
+        
+        yesterday = datetime.today() - timedelta(days=1)
+        return self.download_data(yesterday,yesterday)
     
     #Download all existing data available 
     def get_historical_data(self) -> pd.DataFrame:
