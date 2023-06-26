@@ -35,7 +35,7 @@ class OTE_Data:
         date_today = datetime.now()
 
         if date_today.hour < self.OTE_UPDATE_TIME_CET:
-            date_today.day -= 1
+            date_today = date_today - timedelta(days=1)
 
         self.end_date = datetime(date_today.year,date_today.month,date_today.day)
 
@@ -54,11 +54,10 @@ class OTE_Data:
             response.raise_for_status()
 
         # Load the data into a pandas DataFrame
-        data = pd.read_excel(BytesIO(response.content), header=4, usecols="A:F", nrows=27)
-        # data = pd.read_excel(BytesIO(response.content), header=4, nrows=27)
+        data = pd.read_excel(BytesIO(response.content), header=4, usecols="A:F", nrows=25)
 
-        #convert date type from typestamp 
-        data['Date'] = date.isoformat()
+        #create new column date
+        data['Date'] = datetime.today() 
 
         return data
 
@@ -74,25 +73,37 @@ class OTE_Data:
         for date in dates:
         
             data = self.get_data(date)
+
+            data = data.dropna()
+
             if data is not None:
-                all_data = pd.concat([all_data, data])
 
-        #re-arrange columns for dataframe until date 08.06.2022 to most updated column format 
-        #dataset specific date
-        if date <= datetime(2022, 6, 8):
+              #fix Date column to hold correct datetime string with Day hour value             
+              tmp_hour = 0
 
-            df = df[['Hodina', 'Cena (EUR/MWh)', 'Množství\n(MWh)','Saldo DT\n(MWh)','Export\n(MWh)','Import\n(MWh)']]
+              for col_date in data['Date']:
+                  new_date = col_date.replace(hour= tmp_hour,minute=0,second=0)
+                  col_date = new_date.isoformat(" ", "seconds")
+                  data.loc[tmp_hour+1, 'Date'] = col_date
 
-            #rename column to up to date convention 
-            all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo DT\n(MWh)':'Balance','Export\n(MWh)':'Export','Import\n(MWh)':'Import'}, inplace = True)
+                  tmp_hour+=1
 
-        #from 09.06.2023 no switch of columns from database schema  
-        else:
-            
-            #Rename columns from czech to english
-            all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = True)
-        
-        all_data = all_data.dropna()
+              #append new data to dataframe 
+              all_data = pd.concat([all_data, data])
+
+            #re-arrange columns for dataframe until date 08.06.2022 to most updated column format 
+            #dataset specific date
+            if date <= datetime(2022, 6, 8):
+
+                all_data = all_data[['Hodina', 'Cena (EUR/MWh)', 'Množství\n(MWh)','Saldo DT\n(MWh)','Export\n(MWh)','Import\n(MWh)']]
+
+                #rename column to up to date convention 
+                all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo DT\n(MWh)':'Balance','Export\n(MWh)':'Export','Import\n(MWh)':'Import'}, inplace = True)
+
+            #from 09.06.2023 no switch of columns from database schema  
+            else:
+                #Rename columns from czech to english
+                all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = True)
 
         return all_data
 
