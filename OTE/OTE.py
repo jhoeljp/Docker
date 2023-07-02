@@ -10,6 +10,8 @@ from io import BytesIO
 
 class OTE_Data:
 
+    default_date = datetime(2022,6,8)
+
     def __init__(self) -> None:
         self.base_url = "https://www.ote-cr.cz/pubweb/attachments"
 
@@ -17,7 +19,7 @@ class OTE_Data:
         self.OTE_UPDATE_TIME_CET = 15
 
         #first date known for dateset 
-        self.start_date = datetime(2022,6,8)
+        self.start_date = OTE_Data.default_date
 
         self.set_default_end_date()
 
@@ -93,7 +95,7 @@ class OTE_Data:
 
             #re-arrange columns for dataframe until date 08.06.2022 to most updated column format 
             #dataset specific date
-            if date <= datetime(2022, 6, 8):
+            if date <= OTE_Data.default_date:
 
                 all_data = all_data[['Hodina', 'Cena (EUR/MWh)', 'Množství\n(MWh)','Saldo DT\n(MWh)','Export\n(MWh)','Import\n(MWh)']]
 
@@ -121,6 +123,6 @@ class OTE_Data:
     #Download all existing data available 
     def get_historical_data(self) -> pd.DataFrame:
         #first date known 
-        start_date = datetime(2022, 6, 8)
+        start_date = OTE_Data.default_date
 
         return self.download_data(start_date,self.end_date)
