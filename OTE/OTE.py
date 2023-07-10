@@ -18,20 +18,22 @@ class OTE_Data:
         #first date known for dateset
         self.OTE_UPDATE_TIME_CET = 15
 
-        #first date known for dateset 
+        #first date known for dateset
         self.start_date = OTE_Data.default_date
+        self.end_date = datetime.today()
 
         self.set_default_end_date()
 
-        print(f"start date: {self.start_date}")
-        print(f"end date: {self.end_date}")
-        
+    def print_start_and_end(self):
+      print(f"start date: {self.start_date.day} of  {self.start_date.strftime('%B')} {self.start_date.year}")
+      print(f"end date: {self.end_date.day} of  {self.end_date.strftime('%B')} {self.end_date.year}")
+
     def set_start_date(self, day: int, month: int, year: int) -> None:
         self.start_date = datetime(year,month,day)
 
     def set_end_date(self, day: int, month: int, year: int) -> None:
-        self.start_date = datetime(year,month,day)
-    
+        self.end_date = datetime(year,month,day)
+
     def set_default_end_date(self) -> None:
         #OTE document get updated everyday 15:00 Central European Time
         date_today = datetime.now()
@@ -43,25 +45,34 @@ class OTE_Data:
 
     # Function to download and process the xls file
     def get_data(self, date: datetime) -> pd.DataFrame:
-        
-        # Create the URL
-        url = f"{self.base_url}/01/{date.year}/month{str(date.month).zfill(2)}/day{str(date.day).zfill(2)}/DT_{str(date.day).zfill(2)}_{str(date.month).zfill(2)}_{date.year}_CZ.xls"
+
+      url = ""
+      try:
+          # Create the URL
+          url = f"{self.base_url}/01/{date.year}/month{str(date.month).zfill(2)}/day{str(date.day).zfill(2)}/DT_{str(date.day).zfill(2)}_{str(date.month).zfill(2)}_{date.year}_CZ.xls"
+          print(url)
+
+          # Download the xls file
+          response = requests.get(url)
+
+          if response.status_code != 200:
+              print(f"Error {response.status_code} | Failed to download data . URL: {url}")
+              response.raise_for_status()
+
+          # Load the data into a pandas DataFrame
+          data = pd.read_excel(BytesIO(response.content), header=4, usecols="A:F", nrows=25)
+
+          #create new column date
+          #fix Date column to hold correct datetime string with
+          data['Date'] = date
+
+          return data
+
+      except Exception as e:
+        print("Could not download data from link")
         print(url)
-        
-        # Download the xls file
-        response = requests.get(url)
 
-        if response.status_code != 200:
-            print(f"Error {response.status_code} | Failed to download data . URL: {url}")
-            response.raise_for_status()
-
-        # Load the data into a pandas DataFrame
-        data = pd.read_excel(BytesIO(response.content), header=4, usecols="A:F", nrows=25)
-
-        #create new column date
-        data['Date'] = datetime.today() 
-
-        return data
+      return None
 
     # Function to download data
     def download_data(self, start_date : datetime, end_date : datetime) -> pd.DataFrame:
@@ -73,14 +84,14 @@ class OTE_Data:
 
         # Get data for each date in the range
         for date in dates:
-        
+
             data = self.get_data(date)
 
             data = data.dropna()
 
             if data is not None:
 
-              #fix Date column to hold correct datetime string with Day hour value             
+              #fix Date column to hold correct datetime string with Day hour value
               tmp_hour = 0
 
               for col_date in data['Date']:
@@ -90,22 +101,23 @@ class OTE_Data:
 
                   tmp_hour+=1
 
-              #append new data to dataframe 
-              all_data = pd.concat([all_data, data])
-
-            #re-arrange columns for dataframe until date 08.06.2022 to most updated column format 
+            #re-arrange columns for dataframe until date 08.06.2022 to most updated column format
             #dataset specific date
             if date <= OTE_Data.default_date:
 
-                all_data = all_data[['Hodina', 'Cena (EUR/MWh)', 'Množství\n(MWh)','Saldo DT\n(MWh)','Export\n(MWh)','Import\n(MWh)']]
+                #rename column to up to date convention
+                data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo DT\n(MWh)':'Balance','Export\n(MWh)':'Export','Import\n(MWh)':'Import'}, inplace = True)
 
-                #rename column to up to date convention 
-                all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo DT\n(MWh)':'Balance','Export\n(MWh)':'Export','Import\n(MWh)':'Import'}, inplace = True)
+                data = data[['Day_hour', 'Price', 'Amount','Balance','Export','Import']]
 
-            #from 09.06.2023 no switch of columns from database schema  
+
+            #from 09.06.2023 no switch of columns from database schema
             else:
                 #Rename columns from czech to english
-                all_data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = True)
+                data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = False)
+
+            #append new data to dataframe
+            all_data = pd.concat([all_data, data])
 
         return all_data
 
@@ -113,16 +125,16 @@ class OTE_Data:
     def get_df_data(self) -> pd.DataFrame:
 
         return self.download_data(self.start_date,self.end_date)
-    
+
     #Download data from yesterday
     def get_yesterdays_data(self) -> pd.DataFrame:
-        
+
         yesterday = datetime.today() - timedelta(days=1)
         return self.download_data(yesterday,yesterday)
-    
-    #Download all existing data available 
-    def get_historical_data(self) -> pd.DataFrame:
-        #first date known 
-        start_date = OTE_Data.default_date
 
-        return self.download_data(start_date,self.end_date)
+    #Download all existing data available
+    def get_historical_data(self) -> pd.DataFrame:
+        #first date known
+        # start_date = OTE_Data.default_date
+
+        return self.download_data(self.start_date,self.end_date)
