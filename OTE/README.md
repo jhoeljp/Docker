@@ -23,15 +23,21 @@ Docker Engine 24.0.2 or higher
 
 on path of environment clone this repository and do the following: 
 
+### build docker image
 ```
-$ python3 -m pip install -r requirements.txt
+$ docker build -t ote_image .
 ```
 
-To set up local timescale docker database
+### build container from docker image 
+```
+$ docker run -d --name ote_container -p 5432:5432 -e POSTGRES_PASSWORD=password ote_image
+```
 
+### make sure container is running 
 ```
-$ docker run timescale/timescaledb
+docker ps 
 ```
+
 
 ## Additional Resources
 

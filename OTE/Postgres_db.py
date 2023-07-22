@@ -13,11 +13,15 @@ class Postgres_db():
         print('Populate databse begin!')
 
         #Establish connection with postgres Data base 
-        connection = psycopg2.connect(host=config.DB_HOST,database=config.DB_NAME,user=config.DB_USER,password=config.DB_PASSWORD)
+        connection = psycopg2.connect(host=config.DB_HOST,
+                                      database=config.DB_NAME,
+                                      user=config.DB_USER,
+                                      password=config.DB_PASSWORD)
+        
         cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-        print(dataframe.shape)
         if not dataframe.empty:
+
             #parse through entire dataset 
             for _,row in dataframe.iterrows():
 
