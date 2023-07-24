@@ -1,7 +1,6 @@
 import psycopg2 
 import psycopg2.extras
 import config 
-from OTE import OTE_Data
 from pandas import DataFrame
 
 class Postgres_db():

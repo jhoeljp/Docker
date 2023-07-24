@@ -25,12 +25,16 @@ on path of environment clone this repository and do the following:
 
 ### build docker image
 ```
-$ docker build -t ote_image .
+docker build -t ote_image .
 ```
 
 ### build container from docker image 
 ```
-$ docker run -d --name ote_container -p 5432:5432 -e POSTGRES_PASSWORD=password ote_image
+docker-compose up
+```
+
+<!-- ```
+docker run -d --name ote_container -p 5432:5432 -e POSTGRES_PASSWORD=password ote_image
 ```
 
 ### make sure container is running 
@@ -38,6 +42,10 @@ $ docker run -d --name ote_container -p 5432:5432 -e POSTGRES_PASSWORD=password 
 docker ps 
 ```
 
+## Docker Container
+```
+docker exec -it ote_container bash
+``` -->
 
 ## Additional Resources
 
