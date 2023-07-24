@@ -69,7 +69,7 @@ class OTE_Data:
           return data
 
       except Exception as e:
-        print("Could not download data from link")
+        print(f"Could not download data from link: {e}")
         print(url)
 
       return None
