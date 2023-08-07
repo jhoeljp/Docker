@@ -87,37 +87,44 @@ class OTE_Data:
 
             data = self.get_data(date)
 
-            data = data.dropna()
+            #Check for filled dataframe 
+            if not data.empty:
+                # print(f"Dataframe not empty, shape:{data.shape}")
+                data = data.dropna()
 
-            if data is not None:
+                if data is not None:
 
-              #fix Date column to hold correct datetime string with Day hour value
-              tmp_hour = 0
+                    #fix Date column to hold correct datetime string with Day hour value
+                    tmp_hour = 0
 
-              for col_date in data['Date']:
-                  new_date = col_date.replace(hour= tmp_hour,minute=0,second=0)
-                  col_date = new_date.isoformat(" ", "seconds")
-                  data.loc[tmp_hour+1, 'Date'] = col_date
+                    for col_date in data['Date']:
+                        new_date = col_date.replace(hour= tmp_hour,minute=0,second=0)
+                        col_date = new_date.isoformat(" ", "seconds")
+                        data.loc[tmp_hour+1, 'Date'] = col_date
 
-                  tmp_hour+=1
+                        tmp_hour+=1
 
-            #re-arrange columns for dataframe until date 08.06.2022 to most updated column format
-            #dataset specific date
-            if date <= OTE_Data.default_date:
+                #re-arrange columns for dataframe until date 08.06.2022 to most updated column format
+                #dataset specific date
+                if date <= OTE_Data.default_date:
 
-                #rename column to up to date convention
-                data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo DT\n(MWh)':'Balance','Export\n(MWh)':'Export','Import\n(MWh)':'Import'}, inplace = True)
+                    #rename column to up to date convention
+                    data = data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo DT\n(MWh)':'Balance','Export\n(MWh)':'Export','Import\n(MWh)':'Import'}, inplace = True)
 
-                data = data[['Day_hour', 'Price', 'Amount','Balance','Export','Import']]
+                    data = data[['Day_hour', 'Price', 'Amount','Balance','Export','Import']]
 
 
-            #from 09.06.2023 no switch of columns from database schema
+                #from 09.06.2023 no switch of columns from database schema
+                else:
+                    #Rename columns from czech to english
+                    data = data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = False)
+
+                # print(data)
+                #append new data to dataframe
+                all_data = pd.concat([all_data, data])
             else:
-                #Rename columns from czech to english
-                data.rename(columns = {'Hodina':'Day_hour', 'Cena (EUR/MWh)':'Price', 'Množství\n(MWh)':'Amount','Saldo':'Balance'}, inplace = False)
-
-            #append new data to dataframe
-            all_data = pd.concat([all_data, data])
+                print(f"Dataframe for date:{date} is empty ! ")
+                print(data)
 
         return all_data
 

@@ -13,41 +13,42 @@ There is 4 components to this project:
 3. Data Manipulation (Docker and POSTgres DB)
 4. Data Vizualization (Google Looker)
 
+## WIP (Work In Progress)
+
+Currently working on testing it on live serves, and scheduling a cron job for daily excel download.
+
 ## Requirements
 
-OTE requires:
-python 3.10 or higher 
-Docker Engine 24.0.2 or higher
+* Docker Engine 24.0.2
+* Python 3.10
+    - pandas==1.4.2
+    - psycopg2_binary==2.9.6
+    - Requests==2.31.0
+    - xlrd >= 1.0.0
+
+No need to install python modules! 
 
 ## Getting Started
 
-on path of environment clone this repository and do the following: 
+Download this repository on desktop and do the following: 
 
-### build docker image
-```
-docker build -t ote_image .
-```
+### Configuration
 
-### build container from docker image 
-```
-docker-compose up
-```
+Change all relevant ports and DB naming info on docker-compose.yaml 
 
-<!-- ```
-docker run -d --name ote_container -p 5432:5432 -e POSTGRES_PASSWORD=password ote_image
+Change download dates on "__main__.py"
+
+### Build
+
+```
+docker-compose up --build
 ```
 
-### make sure container is running 
+### Status 
 ```
 docker ps 
 ```
 
-## Docker Container
-```
-docker exec -it ote_container bash
-``` -->
-
 ## Additional Resources
 
-- [Timescale Database](https://docs.timescale.com/self-hosted/latest/install/installation-docker/)
 - [Google Looker Dashboard](https://lookerstudio.google.com)
