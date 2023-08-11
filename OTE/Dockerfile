@@ -25,6 +25,14 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 # Expose the PostgreSQL port
 EXPOSE 5432
 
+COPY ote_records.sql /app
+
+RUN service postgresql start && \
+    su - postgres -c 'psql -c "CREATE DATABASE ote_db;" && psql ote_db < /app/ote_records.sql'
+    # python3 __main__.py
+
+# Run script to populate database
+CMD ["python3", "__main__.py"]
 
 # COPY init.sql /docker-entrypoint-initdb.d/
 
@@ -44,9 +52,13 @@ EXPOSE 5432
 # Run script to populate database
 # CMD ["python3", "__main__.py"]
 
-RUN service postgresql start && \
-    su postgres -c "psql -c 'CREATE DATABASE ote_db;' && psql ote_db < ote_records.sql"
+# RUN service postgresql start && \
+#     su postgres -c "psql -c 'CREATE DATABASE ote_db;' && psql ote_db < ote_records.sql;"
     # python3 __main__.py
 
+# RUN service postgresql start && \
+#     su - postgres -c 'psql -c "CREATE DATABASE ote_db;"' && \
+#     su - postgres -c 'psql ote_db < ote_records.sql;"'
+
 # Run script to populate database
-CMD ["python3", "__main__.py"]
+# CMD ["python3", "__main__.py"]
