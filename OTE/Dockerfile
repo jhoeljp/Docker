@@ -30,5 +30,5 @@ RUN service postgresql start && \
     su - postgres -c 'psql -c "CREATE DATABASE ote_db;"' && \
     service postgresql stop
 
-# Run the Python script
-CMD ["python3", "__main__.py"]
+# Run the cron job and start the Python script
+CMD python3 __main__.py
