@@ -7,9 +7,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: ote_db
-      # POSTGRES_HOST_AUTH_METHOD: trust
-    # volumes:
-    #   - .app/init.sql:/docker-entrypoint-initdb.d/init.sql
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - mynetwork
 

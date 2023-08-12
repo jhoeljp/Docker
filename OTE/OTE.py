@@ -3,11 +3,6 @@ import requests
 from datetime import datetime, timedelta
 from io import BytesIO
 
-'''
-1. Download historical data for the month
-2. Download todays day 
-'''
-
 class OTE_Data:
 
     default_date = datetime(2022,6,8)
@@ -86,6 +81,8 @@ class OTE_Data:
         for date in dates:
 
             data = self.get_data(date)
+
+            #TODO: data has no attribute empoty ??? 
 
             #Check for filled dataframe 
             if not data.empty:

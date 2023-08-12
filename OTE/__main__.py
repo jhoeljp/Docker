@@ -14,11 +14,11 @@ if __name__ == '__main__':
         #Pandas Data Frame
         OTE_data_obj = OTE_Data()
 
-        OTE_data_obj.set_start_date(day=1,month=6,year=2022)
+        #OTE start date
         OTE_data_obj.set_start_date(day=1,month=4,year=2023)
 
-        ote_df = get_historical_data(OTE_data_obj)
-        # ote_df = get_yesterday_data(OTE_data_obj)
+        #Download data
+        ote_df = OTE_data_obj.get_historical_data()
 
         #sql object for populating database 
         sql = Postgres_db()
