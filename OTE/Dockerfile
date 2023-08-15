@@ -30,5 +30,8 @@ RUN service postgresql start && \
     su - postgres -c 'psql -c "CREATE DATABASE ote_db;"' && \
     service postgresql stop
 
-# Run the cron job and start the Python script
+#python buffer flush 
+ENV PYTHONUNBUFFERED=1
+
+# Run the python script
 CMD python3 __main__.py

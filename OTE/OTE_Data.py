@@ -23,6 +23,7 @@ class OTE_Data:
 
         self.set_default_end_date()
 
+    #Helper functions 
     def print_start_and_end(self):
       print(f"start date: {self.start_date.day} of  {self.start_date.strftime('%B')} {self.start_date.year}")
       print(f"end date: {self.end_date.day} of  {self.end_date.strftime('%B')} {self.end_date.year}")
