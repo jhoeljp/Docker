@@ -10,23 +10,17 @@ There is 4 components to this project:
 
 1. Data Extraction (OTE website) 
 2. Data Transformation (pandas) 
-3. Data Manipulation (Docker and POSTgres DB)
+3. Data Manipulation (Docker and Postgre db)
 4. Data Vizualization (Google Looker)
 
 ## WIP (Work In Progress)
 
-Currently working on testing it on live serves, and scheduling a cron job for daily excel download.
+* Testing it on live servers.
+* Connecting db to Google Looker dashboard
 
 ## Requirements
 
-* Docker Engine 24.0.2
-* Python 3.10
-    - pandas==1.4.2
-    - psycopg2_binary==2.9.6
-    - Requests==2.31.0
-    - xlrd >= 1.0.0
-
-No need to install python modules! 
+* Docker Engine 24.0
 
 ## Getting Started
 
@@ -40,13 +34,12 @@ Change download dates on "__main__.py"
 
 ### Build
 
+Open the terminal 
+Change to directory containing docker-compose.yaml 
+
+Enter the following command: 
 ```
 docker-compose up --build
-```
-
-### Status 
-```
-docker ps 
 ```
 
 ## Additional Resources

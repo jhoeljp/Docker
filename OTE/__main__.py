@@ -20,7 +20,7 @@ if __name__ == '__main__':
             print(f"latest date updated was {sql.latest_recorded_date}")
             OTE_data_obj.start_date = sql.latest_recorded_date
             
-        # db empty  
+        # Uncomment below for set historical download dates !!!!  
         # else:  
             #Set historical download start/end date
             # OTE_data_obj.set_start_date(day=1,month=6,year=2021)
@@ -29,7 +29,8 @@ if __name__ == '__main__':
         try:
 
             if OTE_data_obj.start_date != OTE_data_obj.end_date:
-                #TODO: missing todays date so it has to run again and downlaod the latest 
+
+
                 OTE_data_obj.print_start_and_end()
 
                 #Download data
