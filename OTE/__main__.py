@@ -2,6 +2,9 @@ from Postgres_db import *
 from OTE_Data import *
 from time import sleep
 
+#time to check for db updates
+UPDATE_HOUR_CHECK = 5
+
 if __name__ == '__main__': 
 
     #Repeat 
@@ -46,5 +49,5 @@ if __name__ == '__main__':
             print(f"Exception: {ex}")
 
 
-        #timeout 
-        sleep(60)
+        #timeout in seconds 
+        sleep(60*60*UPDATE_HOUR_CHECK)

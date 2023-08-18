@@ -23,22 +23,25 @@ class Postgres_db():
 
         #YYYY-MM-DD
         self.latest_recorded_date = self.database_fetchone(max_date_query)
-        if self.latest_recorded_date !=None: 
-            self.latest_recorded_date = str(self.database_fetchone(max_date_query)[0])
-        print(f"Latest date on record {self.latest_recorded_date}")
+
+        print(f"Latest date on record: {self.latest_recorded_date}")
 
         #determine if fetching specifications 
         self.ote_fetch = self.update_records(self.latest_recorded_date)
 
+        print(f"Latest date on record: {self.latest_recorded_date}")
 
-    def update_records(self,str_latest_date):
+
+    def update_records(self,latest_date):
 
         #determine if fetching specifications 
         fetch = False
         
+        latest_date = latest_date[0]
+
         #db has records 
-        if str_latest_date != "None":
-            latest_date = datetime.strptime(str_latest_date, "%Y-%m-%d")
+        if latest_date != None:
+            latest_date = datetime.strptime(str(latest_date), "%Y-%m-%d")
             self.latest_recorded_date = latest_date
 
             #is latest record up to date ? 
@@ -82,6 +85,9 @@ class Postgres_db():
         except psycopg2.OperationalError as error:
             print("Could not connect to the PostgreSQL server: ", error)
 
+        if result == "None":
+            return None 
+        
         return result
 
 

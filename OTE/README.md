@@ -4,6 +4,8 @@
 
 This project's aim is to perform data analysis and ML to contextualize their public data on energy resources.
 
+Current version can fetch records as early as June 18, 2021. 
+
 ## Overview 
 
 There is 4 components to this project: 
@@ -13,7 +15,7 @@ There is 4 components to this project:
 3. Data Manipulation (Docker and Postgre db)
 4. Data Vizualization (Google Looker)
 
-## WIP (Work In Progress)
+## Work In Progress
 
 * Testing it on live servers.
 * Connecting db to Google Looker dashboard
@@ -35,9 +37,9 @@ Change download dates on "__main__.py"
 ### Build
 
 Open the terminal 
-Change to directory containing docker-compose.yaml 
+Switch to directory containing docker-compose.yaml 
 
-Enter the following command: 
+Run the following command: 
 ```
 docker-compose up --build
 ```
