@@ -6,6 +6,8 @@ This project's aim is to perform data analysis and ML to contextualize their pub
 
 Current version can fetch records as early as June 18, 2021. 
 
+Check out the most up to date dashboard [vizualization](https://lookerstudio.google.com/s/vMicIZTywxA)
+
 ## Overview 
 
 There is 4 components to this project: 
@@ -15,14 +17,14 @@ There is 4 components to this project:
 3. Data Manipulation (Docker and Postgre db)
 4. Data Vizualization (Google Looker)
 
-## Work In Progress
-
-* Testing it on live servers.
-* Connecting db to Google Looker dashboard
-
 ## Requirements
 
-* Docker Engine 24.0
+* Docker Engine
+* docker-compose 
+
+### Remote connection 
+* ufw (Linux Uncomplicated firewall)
+* on windows OS you need to create the Firewall outbound rule for port 5342 
 
 ## Getting Started
 
@@ -36,14 +38,31 @@ Change download dates on "__main__.py"
 
 ### Build
 
-Open the terminal 
-Switch to directory containing docker-compose.yaml 
+Having met all requirements, Open the terminal
+
+To make the database container network readily available run:
+```
+docker network create mynetwork
+```
+
+Switch to the directory containing the docker-compose.yaml file
 
 Run the following command: 
 ```
 docker-compose up --build
 ```
 
-## Additional Resources
+After the containers have been initialized with no errors
+configure the firewall using ufw (linux), for windows OS use <>
 
-- [Google Looker Dashboard](https://lookerstudio.google.com)
+```
+sudo ufw allow 5432
+sudo ufw enable
+```
+This command opens port 5432 for incoming connections.
+Allowing us to connect to our database container remotely
+
+## Future Updates
+
+* Run ML models to predict occurence of lowest energy price
+* Accomodate for bigger data sample  
