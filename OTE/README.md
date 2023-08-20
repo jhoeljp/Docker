@@ -30,11 +30,12 @@ There is 4 components to this project:
 
 Download this repository on desktop and do the following: 
 
-### Configuration
+## Configuration
 
 Change all relevant ports and DB naming info on docker-compose.yaml 
 
 Change download dates on "__main__.py"
+
 
 ### Build
 

@@ -2,14 +2,26 @@ from Postgres_db import *
 from OTE_Data import *
 from time import sleep
 
-#time to check for db updates
-UPDATE_HOUR_CHECK = 5
+
+#Update db everyday at 15 PM UTC
+def sleep_until_utc(target_hour):
+    current_time = datetime.datetime.utcnow()
+    target_time = current_time.replace(hour=target_hour, minute=0, second=0, microsecond=0)
+
+    if current_time >= target_time:
+        return  # The target time has already passed
+
+    time_difference = (target_time - current_time).total_seconds()
+    sleep(time_difference)
+
+
 
 if __name__ == '__main__': 
 
     #Repeat 
 
     while True:
+
         print("Checking to update db")
 
         #object for talking psql database 
@@ -49,5 +61,6 @@ if __name__ == '__main__':
             print(f"Exception: {ex}")
 
 
-        #timeout in seconds 
-        sleep(60*60*UPDATE_HOUR_CHECK)
+        #Update db everyday at 15 PM UTC
+        target_hour = 15  # 2 PM UTC
+        sleep_until_utc(target_hour)

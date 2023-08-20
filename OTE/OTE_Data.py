@@ -19,7 +19,9 @@ class OTE_Data:
 
         #first date known for dateset
         self.start_date = OTE_Data.default_date
-        self.end_date = datetime.today()
+
+        #start day tomorrow
+        self.end_date = datetime.today() + timedelta(days=1)
 
         self.set_default_end_date()
 

@@ -24,8 +24,6 @@ class Postgres_db():
         #YYYY-MM-DD
         self.latest_recorded_date = self.database_fetchone(max_date_query)
 
-        print(f"Latest date on record: {self.latest_recorded_date}")
-
         #determine if fetching specifications 
         self.ote_fetch = self.update_records(self.latest_recorded_date)
 
