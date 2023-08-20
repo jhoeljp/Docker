@@ -5,7 +5,7 @@ from time import sleep
 
 #Update db everyday at 15 PM UTC
 def sleep_until_utc(target_hour):
-    current_time = datetime.datetime.utcnow()
+    current_time = datetime.utcnow()
     target_time = current_time.replace(hour=target_hour, minute=0, second=0, microsecond=0)
 
     if current_time >= target_time:
