@@ -34,8 +34,6 @@ class Postgres_db():
 
         #determine if fetching specifications 
         fetch = False
-        
-        latest_date = latest_date[0]
 
         #db has records 
         if latest_date != None:
@@ -74,8 +72,8 @@ class Postgres_db():
             cursor.execute(query)
 
             # Fetch the result
-            result = cursor.fetchone()  # Use fetchone() for a single row result or fetchall() for multiple rows
-
+            result = cursor.fetchone()[0]  # Use fetchone() for a single row result or fetchall() for multiple rows
+            print(f"result from db : {result}")
             # Close the cursor and the connection
             cursor.close()
             connection.close()

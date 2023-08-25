@@ -3,19 +3,6 @@ from OTE_Data import *
 from time import sleep
 
 
-#Update db everyday at 15 PM UTC
-def sleep_until_utc(target_hour):
-    current_time = datetime.utcnow()
-    target_time = current_time.replace(hour=target_hour, minute=0, second=0, microsecond=0)
-
-    if current_time >= target_time:
-        return  # The target time has already passed
-
-    time_difference = (target_time - current_time).total_seconds()
-    sleep(time_difference)
-
-
-
 if __name__ == '__main__': 
 
     #Repeat 
@@ -37,9 +24,9 @@ if __name__ == '__main__':
             
         # Uncomment below for set historical download dates !!!!  
         # else:  
-            #Set historical download start/end date
-            # OTE_data_obj.set_start_date(day=1,month=6,year=2021)
-            # OTE_data_obj.set_end_date(day=13,month=8,year=2023)
+        #     # Set historical download start/end date
+        #     OTE_data_obj.set_start_date(day=1,month=8,year=2023)
+        #     OTE_data_obj.set_end_date(day=13,month=8,year=2023)
 
         try:
 
@@ -60,7 +47,5 @@ if __name__ == '__main__':
         except Exception as ex:
             print(f"Exception: {ex}")
 
-
-        #Update db everyday at 15 PM UTC
-        target_hour = 15  # 2 PM UTC
-        sleep_until_utc(target_hour)
+        #fetch for update every hour
+        sleep(3600)
