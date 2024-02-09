@@ -1,6 +1,6 @@
 # OTE Initiative
 
-[OTE](https://www.ote-cr.cz/en/welcome?set_language=en) is one of the largest Energy companies in Check Republic. They make their predictions of electricity prices readily available to the public on a day to day basis.
+[OTE](https://www.ote-cr.cz/en/welcome?set_language=en) is one of the largest Energy companies in Czech Republic. They make their predictions of electricity prices readily available to the public on a day to day basis.
 
 This project's aim is to perform data analysis and ML to contextualize their public data on energy resources.
 
